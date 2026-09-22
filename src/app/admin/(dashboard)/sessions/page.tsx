@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { Card } from "@/components/ui/card";
 import { getKelompokContext, listSessions } from "../actions";
 import { TermPicker } from "../term-picker";
+import { NewSessionForm } from "./new-session-form";
 
 export default async function SessionsPage({
   searchParams,
@@ -8,7 +10,7 @@ export default async function SessionsPage({
   searchParams: Promise<{ term?: string }>;
 }) {
   const { term: termParam } = await searchParams;
-  const { terms } = await getKelompokContext();
+  const { terms, classes } = await getKelompokContext();
   const activeTerm = terms.find((t) => t.id === termParam) ?? terms.find((t) => t.is_active) ?? terms[0];
   const sessions = activeTerm ? await listSessions(activeTerm.id) : [];
 
@@ -18,6 +20,17 @@ export default async function SessionsPage({
         <h1 className="text-xl font-semibold text-zinc-900">Sessions</h1>
         <TermPicker terms={terms} selectedTermId={activeTerm?.id} />
       </div>
+
+      <Card className="mt-6">
+        <h2 className="mb-4 text-sm font-semibold text-zinc-700">
+          Add a Session
+        </h2>
+        <p className="mb-4 text-xs text-zinc-500">
+          For a session a teacher didn&apos;t log themselves. If one already
+          exists for that class and date, you&apos;ll be taken to it instead.
+        </p>
+        <NewSessionForm classes={classes} termId={activeTerm?.id} />
+      </Card>
 
       <div className="mt-6 flex flex-col gap-2">
         {sessions.map((s) => (

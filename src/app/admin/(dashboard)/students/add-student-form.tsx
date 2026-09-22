@@ -35,9 +35,11 @@ export function AddStudentForm({
       <Field label="Guardian contact (optional)">
         <Input name="guardianContact" />
       </Field>
-      <Field label="Starting class (optional)">
-        <Select name="classId" defaultValue="">
-          <option value="">No class yet</option>
+      <Field label="Class">
+        <Select name="classId" required defaultValue="" disabled={classes.length === 0}>
+          <option value="" disabled>
+            {classes.length === 0 ? "Add a class first" : "Choose a class"}
+          </option>
           {classes.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
@@ -47,6 +49,12 @@ export function AddStudentForm({
       </Field>
       <input type="hidden" name="termId" value={activeTerm?.id ?? ""} />
 
+      {classes.length === 0 && (
+        <p className="sm:col-span-2 text-sm text-amber-700">
+          Every student must be assigned to a class -- add a class below before
+          adding students.
+        </p>
+      )}
       {state?.error && (
         <p className="sm:col-span-2 text-sm text-red-600">{state.error}</p>
       )}
@@ -55,7 +63,7 @@ export function AddStudentForm({
       )}
 
       <div className="sm:col-span-2">
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" disabled={pending || classes.length === 0}>
           {pending ? "Adding..." : "Add student"}
         </Button>
       </div>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getSessionWithRoster } from "../../actions";
+import { getSessionWithRoster, signOutTeacher } from "../../actions";
 import { ATTENDANCE_LABELS, type AttendanceStatus } from "@/lib/types";
 import { clsx } from "clsx";
 import { StudentJumpSelect } from "./student-jump";
@@ -23,17 +23,27 @@ export default async function SessionRosterPage({
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold text-zinc-900">
-          {session.classes.name}
-        </h1>
-        <p className="text-sm text-zinc-500">
-          {new Date(session.session_date + "T00:00:00").toLocaleDateString(
-            "en-AU",
-            { weekday: "long", day: "numeric", month: "long" },
-          )}{" "}
-          &middot; {session.teacher_name}
-        </p>
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <h1 className="text-xl font-semibold text-zinc-900">
+            {session.classes.name}
+          </h1>
+          <p className="text-sm text-zinc-500">
+            {new Date(session.session_date + "T00:00:00").toLocaleDateString(
+              "en-AU",
+              { weekday: "long", day: "numeric", month: "long" },
+            )}{" "}
+            &middot; {session.teacher_name}
+          </p>
+        </div>
+        <form action={signOutTeacher}>
+          <button
+            type="submit"
+            className="text-sm text-zinc-500 hover:text-zinc-700"
+          >
+            Log out
+          </button>
+        </form>
       </div>
 
       <p className="mb-3 text-sm font-medium text-zinc-700">

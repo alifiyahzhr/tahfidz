@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getKelompokSession } from "@/lib/teacher-session";
-import { getActiveTerm, getClassesForCurrentKelompok } from "../actions";
+import { getActiveTerm, getClassesForCurrentKelompok, signOutTeacher } from "../actions";
 import { StartForm } from "./start-form";
 
 export default async function StartPage() {
@@ -15,7 +15,17 @@ export default async function StartPage() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">
       <div className="w-full max-w-sm">
-        <h1 className="text-xl font-semibold text-zinc-900">New Session</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-semibold text-zinc-900">New Session</h1>
+          <form action={signOutTeacher}>
+            <button
+              type="submit"
+              className="text-sm text-zinc-500 hover:text-zinc-700"
+            >
+              Log out
+            </button>
+          </form>
+        </div>
 
         {!activeTerm && (
           <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">

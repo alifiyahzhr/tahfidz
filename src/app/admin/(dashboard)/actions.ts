@@ -207,6 +207,12 @@ export async function createStudent(_prevState: unknown, formData: FormData) {
   const guardianContact = String(formData.get("guardianContact") ?? "").trim();
 
   if (!fullName) return { error: "Enter the student's name." };
+  if (!classId) return { error: "Choose a class for this student." };
+  if (!termId) {
+    return {
+      error: "No active term is set up yet. Set one from Admin > Terms first.",
+    };
+  }
 
   const { data: student, error } = await service
     .from("students")
@@ -222,12 +228,10 @@ export async function createStudent(_prevState: unknown, formData: FormData) {
 
   if (error || !student) return { error: "Couldn't add the student." };
 
-  if (classId && termId) {
-    await service.from("enrollments").upsert(
-      { student_id: student.id, term_id: termId, class_id: classId },
-      { onConflict: "student_id,term_id" },
-    );
-  }
+  await service.from("enrollments").upsert(
+    { student_id: student.id, term_id: termId, class_id: classId },
+    { onConflict: "student_id,term_id" },
+  );
 
   revalidatePath("/admin/students");
   return { success: true };
@@ -430,6 +434,53 @@ export async function setActiveTerm(_prevState: unknown, formData: FormData) {
 }
 
 // ---------- Sessions (admin correction) ----------
+
+export async function adminCreateSession(_prevState: unknown, formData: FormData) {
+  const kelompokId = await scopedKelompokId();
+  const service = createServiceClient();
+
+  const classId = String(formData.get("classId") ?? "");
+  const termId = String(formData.get("termId") ?? "");
+  const sessionDate = String(formData.get("sessionDate") ?? "");
+  const teacherName = String(formData.get("teacherName") ?? "").trim();
+
+  if (!classId) return { error: "Choose a class." };
+  if (!termId) return { error: "Choose a term." };
+  if (!sessionDate) return { error: "Choose a date." };
+  if (!teacherName) return { error: "Enter the teacher's name." };
+
+  const { data: klass } = await service
+    .from("classes")
+    .select("id")
+    .eq("id", classId)
+    .eq("kelompok_id", kelompokId)
+    .single();
+  if (!klass) return { error: "That class isn't valid." };
+
+  const { data: existing } = await service
+    .from("sessions")
+    .select("id")
+    .eq("class_id", classId)
+    .eq("session_date", sessionDate)
+    .maybeSingle();
+
+  if (existing) redirect(`/admin/sessions/${existing.id}`);
+
+  const { data: created, error } = await service
+    .from("sessions")
+    .insert({
+      class_id: classId,
+      term_id: termId,
+      session_date: sessionDate,
+      teacher_name: teacherName,
+    })
+    .select("id")
+    .single();
+
+  if (error || !created) return { error: "Couldn't create the session." };
+
+  redirect(`/admin/sessions/${created.id}`);
+}
 
 export async function listSessions(termId?: string) {
   const kelompokId = await scopedKelompokId();
