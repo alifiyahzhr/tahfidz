@@ -1,13 +1,11 @@
 import Link from "next/link";
-import { BookOpen } from "lucide-react";
+import { AppIcon } from "@/components/ui/app-icon";
 
 export default function Home() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">
       <div className="w-full max-w-sm text-center">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-700">
-          <BookOpen className="h-7 w-7 text-white" strokeWidth={1.75} />
-        </div>
+        <AppIcon size={64} className="mx-auto mb-4" />
         <h1 className="text-2xl font-semibold text-zinc-900">
           Tahfidz Tracker
         </h1>

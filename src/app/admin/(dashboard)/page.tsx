@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
+import { AppIcon } from "@/components/ui/app-icon";
 import { getDashboardStats } from "./actions";
 
 export default async function AdminDashboardPage() {
@@ -7,6 +8,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <div>
+      <AppIcon size={48} className="mb-3" />
       <h1 className="text-xl font-semibold text-zinc-900">Dashboard</h1>
       <p className="mt-1 text-sm text-zinc-500">
         {stats.term ? stats.term.name : "No active term set"}

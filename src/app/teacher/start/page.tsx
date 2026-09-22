@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getKelompokSession } from "@/lib/teacher-session";
 import { getActiveTerm, getClassesForCurrentKelompok, signOutTeacher } from "../actions";
 import { StartForm } from "./start-form";
+import { AppIcon } from "@/components/ui/app-icon";
 
 export default async function StartPage() {
   const session = await getKelompokSession();
@@ -15,6 +16,7 @@ export default async function StartPage() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">
       <div className="w-full max-w-sm">
+        <AppIcon size={48} className="mb-3" />
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-semibold text-zinc-900">New Session</h1>
           <form action={signOutTeacher}>
