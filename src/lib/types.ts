@@ -39,6 +39,11 @@ export interface Kelompok {
   daerah_id: string;
   name: string;
   slug: string;
+  pin: string | null;
+}
+
+export interface KelompokWithDaerah extends Kelompok {
+  daerah_name: string;
 }
 
 export interface Teacher {

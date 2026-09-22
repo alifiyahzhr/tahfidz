@@ -7,6 +7,8 @@ import { getCurrentAdmin } from "@/lib/admin-session";
 import { createServiceClient } from "@/lib/supabase/service";
 import type {
   AttendanceStatus,
+  Kelompok,
+  KelompokWithDaerah,
   ProficiencyRating,
   SchoolClass,
   Session,
@@ -42,7 +44,43 @@ async function scopedKelompokId(): Promise<string> {
   return data.id;
 }
 
+/** Every kelompok this admin can manage -- one for a kelompok_admin, all of
+ * a daerah for a daerah_admin, or every kelompok for a super_admin. Lets
+ * settings (like teacher PINs) scale to multiple kelompoks later. */
+async function accessibleKelompokIds(): Promise<string[]> {
+  const admin = await requireAdmin();
+  const service = createServiceClient();
+
+  if (admin.kelompok_id) return [admin.kelompok_id];
+
+  const query = service.from("kelompok").select("id");
+  const { data } = admin.daerah_id
+    ? await query.eq("daerah_id", admin.daerah_id)
+    : await query;
+
+  return (data ?? []).map((k) => k.id);
+}
+
 // ---------- Reference data ----------
+
+export async function listAccessibleKelompoks() {
+  const ids = await accessibleKelompokIds();
+  if (ids.length === 0) return [];
+
+  const service = createServiceClient();
+  const { data } = await service
+    .from("kelompok")
+    .select("*, daerah(name)")
+    .in("id", ids)
+    .order("name");
+
+  return (data ?? []).map((k) => {
+    const { daerah, ...rest } = k as unknown as Kelompok & {
+      daerah: { name: string } | null;
+    };
+    return { ...rest, daerah_name: daerah?.name ?? "" };
+  }) as KelompokWithDaerah[];
+}
 
 export async function getKelompokContext() {
   const kelompokId = await scopedKelompokId();
@@ -630,7 +668,12 @@ export async function adminUpsertRecord(_prevState: unknown, formData: FormData)
 // ---------- Settings ----------
 
 export async function changeKelompokPin(_prevState: unknown, formData: FormData) {
-  const kelompokId = await scopedKelompokId();
+  const kelompokId = String(formData.get("kelompokId") ?? "");
+  const allowedIds = await accessibleKelompokIds();
+  if (!kelompokId || !allowedIds.includes(kelompokId)) {
+    return { error: "Not found." };
+  }
+
   const service = createServiceClient();
 
   const newPin = String(formData.get("newPin") ?? "").trim();
@@ -642,10 +685,11 @@ export async function changeKelompokPin(_prevState: unknown, formData: FormData)
   const pinHash = await bcrypt.hash(newPin, 10);
   const { error } = await service
     .from("kelompok")
-    .update({ pin_hash: pinHash })
+    .update({ pin_hash: pinHash, pin: newPin })
     .eq("id", kelompokId);
 
   if (error) return { error: "Couldn't update the PIN." };
+  revalidatePath("/admin/settings");
   return { success: true };
 }
 

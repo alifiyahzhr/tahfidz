@@ -1,13 +1,14 @@
 import { Settings as SettingsIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { PageTitle } from "@/components/ui/page-title";
-import { getKelompokContext, listTeachers } from "../actions";
-import { PinForm } from "./pin-form";
+import { listAccessibleKelompoks, listTeachers } from "../actions";
+import { KelompokPinsTable } from "./kelompok-pins-table";
+import { ChangePasswordCard } from "./change-password-card";
 import { TeachersCard } from "./teachers-card";
 
 export default async function SettingsPage() {
-  const [{ kelompok }, teachers] = await Promise.all([
-    getKelompokContext(),
+  const [kelompoks, teachers] = await Promise.all([
+    listAccessibleKelompoks(),
     listTeachers(),
   ]);
 
@@ -17,13 +18,16 @@ export default async function SettingsPage() {
 
       <Card className="mt-6">
         <h2 className="mb-1 text-sm font-semibold text-zinc-700">
-          Teacher PIN &mdash; {kelompok?.name}
+          Teacher PINs
         </h2>
         <p className="mb-4 text-xs text-zinc-500">
-          This is the code teachers enter to sign in and record progress.
+          The code teachers enter to sign in and record progress, per
+          kelompok.
         </p>
-        <PinForm />
+        <KelompokPinsTable kelompoks={kelompoks} />
       </Card>
+
+      <ChangePasswordCard />
 
       <TeachersCard teachers={teachers} />
     </div>

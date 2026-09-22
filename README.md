@@ -7,8 +7,8 @@ Sydney kelompok and built to expand to other kelompok across AU-NZ.
   attendance + reading progress + a proficiency rating + comments for each
   child, per session.
 - **Admins** correct or fill in missing data, manage students/classes/terms,
-  set targets per class per term, and view attendance & progress-vs-target
-  charts. Each student has their own profile with full history.
+  set a target per student per term, and view attendance & progress charts.
+  Each student has their own profile with full history.
 
 Data is divided by term (4 terms per school year, matching NSW school terms).
 
@@ -25,13 +25,19 @@ You'll need two free accounts: **Supabase** (the database) and **Vercel**
 ### 1. Create a Supabase project
 
 1. Go to [supabase.com](https://supabase.com) and create a new project.
-2. In the SQL editor, run the contents of
-   [`supabase/migrations/0001_init.sql`](supabase/migrations/0001_init.sql).
-   This creates all the tables.
+2. In the SQL editor, run each file in
+   [`supabase/migrations/`](supabase/migrations/) in order (0001, 0002,
+   0003...). This creates all the tables -- re-run any new ones as they're
+   added later.
 3. In **Project Settings → API**, copy:
    - Project URL
    - `anon` public key
    - `service_role` key (keep this one secret)
+4. In **Authentication → URL Configuration**, add your app's reset-password
+   page to **Redirect URLs** (needed for the "change password" flow under
+   Admin → Settings): `http://localhost:3000/admin/reset-password` for local
+   dev, and `https://your-deployed-domain/admin/reset-password` once
+   deployed.
 
 ### 2. Configure the app locally
 
@@ -76,15 +82,15 @@ project's settings. Vercel will give you a real URL to share with teachers.
 
 - **Admin → Terms**: add each new term's dates and mark which one is active.
   Only the active term accepts new teacher sessions.
-- **Admin → Classes & targets**: add classes (recitation or memorisation) and
-  set what each class is working toward for the selected term.
-- **Admin → Students**: add students, assign them to a class per term, edit
-  details, view their full profile and history.
-- **Admin → Sessions**: correct anything a teacher logged, or fill in a
-  student who was missed.
-- **Admin → Reports**: attendance and progress-vs-target charts per class,
-  per term.
-- **Admin → Settings**: change the teacher PIN.
+- **Admin → Classes**: add classes (recitation or memorisation).
+- **Admin → Students**: add students (each must be assigned a class), set
+  their target per term, edit details, view their full profile and history.
+- **Admin → Sessions**: correct anything a teacher logged, or start one
+  yourself for a student who was missed.
+- **Admin → Reports**: attendance and progress charts per class, per term.
+- **Admin → Settings**: view/change each kelompok's teacher PIN, change your
+  own password (via an emailed confirmation link), and manage the
+  pre-filled teacher name list.
 
 ## Scaling to more kelompok later
 
