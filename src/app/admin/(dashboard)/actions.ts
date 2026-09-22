@@ -12,6 +12,8 @@ import type {
   Session,
   SessionRecord,
   Student,
+  StudentTarget,
+  Teacher,
   Term,
 } from "@/lib/types";
 
@@ -327,49 +329,98 @@ export async function createClass(_prevState: unknown, formData: FormData) {
   return { success: true };
 }
 
-export async function setClassTarget(_prevState: unknown, formData: FormData) {
+// ---------- Student targets ----------
+
+export async function setStudentTarget(_prevState: unknown, formData: FormData) {
   const kelompokId = await scopedKelompokId();
   const service = createServiceClient();
 
-  const classId = String(formData.get("classId") ?? "");
+  const studentId = String(formData.get("studentId") ?? "");
   const termId = String(formData.get("termId") ?? "");
   const targetText = String(formData.get("targetText") ?? "").trim();
 
-  if (!classId || !termId) return { error: "Missing fields." };
+  if (!studentId || !termId) return { error: "Missing fields." };
 
-  const { data: klass } = await service
-    .from("classes")
+  const { data: student } = await service
+    .from("students")
     .select("id")
-    .eq("id", classId)
+    .eq("id", studentId)
     .eq("kelompok_id", kelompokId)
     .single();
-  if (!klass) return { error: "Not found." };
+  if (!student) return { error: "Not found." };
 
-  const { error } = await service.from("class_targets").upsert(
+  const { error } = await service.from("student_targets").upsert(
     {
-      class_id: classId,
+      student_id: studentId,
       term_id: termId,
       target_text: targetText,
       updated_at: new Date().toISOString(),
     },
-    { onConflict: "class_id,term_id" },
+    { onConflict: "student_id,term_id" },
   );
 
   if (error) return { error: "Couldn't save the target." };
 
-  revalidatePath("/admin/classes");
+  revalidatePath(`/admin/students/${studentId}`);
   return { success: true };
 }
 
-export async function getClassTargets(termId: string) {
+export async function getStudentTargets(studentId: string) {
+  const service = createServiceClient();
+  const { data } = await service
+    .from("student_targets")
+    .select("*")
+    .eq("student_id", studentId);
+  return (data ?? []) as StudentTarget[];
+}
+
+// ---------- Teachers ----------
+
+export async function listTeachers() {
   const kelompokId = await scopedKelompokId();
   const service = createServiceClient();
   const { data } = await service
-    .from("class_targets")
-    .select("*, classes!inner(kelompok_id)")
-    .eq("term_id", termId)
-    .eq("classes.kelompok_id", kelompokId);
-  return data ?? [];
+    .from("teachers")
+    .select("*")
+    .eq("kelompok_id", kelompokId)
+    .order("full_name");
+  return (data ?? []) as Teacher[];
+}
+
+export async function addTeacher(_prevState: unknown, formData: FormData) {
+  const kelompokId = await scopedKelompokId();
+  const service = createServiceClient();
+
+  const fullName = String(formData.get("fullName") ?? "").trim();
+  if (!fullName) return { error: "Enter a name." };
+
+  const { error } = await service
+    .from("teachers")
+    .insert({ kelompok_id: kelompokId, full_name: fullName });
+
+  if (error) return { error: "Couldn't add (that name may already exist)." };
+
+  revalidatePath("/admin/settings");
+  return { success: true };
+}
+
+export async function removeTeacher(_prevState: unknown, formData: FormData) {
+  const kelompokId = await scopedKelompokId();
+  const service = createServiceClient();
+
+  const teacherId = String(formData.get("teacherId") ?? "");
+  if (!teacherId) return { error: "Missing teacher." };
+
+  const { error } = await service
+    .from("teachers")
+    .delete()
+    .eq("id", teacherId)
+    .eq("kelompok_id", kelompokId);
+
+  if (error) return { error: "Couldn't remove that teacher." };
+
+  revalidatePath("/admin/settings");
+  return { success: true };
 }
 
 // ---------- Terms ----------
@@ -561,8 +612,8 @@ export async function adminUpsertRecord(_prevState: unknown, formData: FormData)
       session_id: sessionId,
       student_id: studentId,
       attendance,
-      progress_text: attendance === "hadir" ? progressText || null : null,
-      proficiency: attendance === "hadir" && proficiency ? proficiency : null,
+      progress_text: progressText || null,
+      proficiency: proficiency || null,
       comments: comments || null,
       updated_by_admin: true,
       updated_at: new Date().toISOString(),
@@ -654,16 +705,9 @@ export async function getProgressReport(termId: string) {
     .eq("kelompok_id", kelompokId)
     .order("sort_order");
 
-  const { data: targets } = await service
-    .from("class_targets")
-    .select("class_id, target_text")
-    .eq("term_id", termId);
-  const targetByClass = new Map((targets ?? []).map((t) => [t.class_id, t.target_text]));
-
   const results: {
     classId: string;
     className: string;
-    target: string | null;
     ulang: number;
     cukup: number;
     baik: number;
@@ -693,7 +737,6 @@ export async function getProgressReport(termId: string) {
     results.push({
       classId: klass.id,
       className: klass.name,
-      target: targetByClass.get(klass.id) ?? null,
       ...counts,
     });
   }

@@ -1,6 +1,11 @@
 import { redirect } from "next/navigation";
 import { getKelompokSession } from "@/lib/teacher-session";
-import { getActiveTerm, getClassesForCurrentKelompok, signOutTeacher } from "../actions";
+import {
+  getActiveTerm,
+  getClassesForCurrentKelompok,
+  getTeachersForCurrentKelompok,
+  signOutTeacher,
+} from "../actions";
 import { StartForm } from "./start-form";
 import { AppIcon } from "@/components/ui/app-icon";
 
@@ -8,8 +13,9 @@ export default async function StartPage() {
   const session = await getKelompokSession();
   if (!session) redirect("/teacher");
 
-  const [classes, activeTerm] = await Promise.all([
+  const [classes, teachers, activeTerm] = await Promise.all([
     getClassesForCurrentKelompok(),
+    getTeachersForCurrentKelompok(),
     getActiveTerm(),
   ]);
 
@@ -40,7 +46,7 @@ export default async function StartPage() {
         )}
 
         <div className="mt-8">
-          <StartForm classes={classes} kelompokName={session.kelompokName} />
+          <StartForm classes={classes} teachers={teachers} kelompokName={session.kelompokName} />
         </div>
       </div>
     </main>

@@ -1,11 +1,13 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { startSession } from "../actions";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/field";
-import type { SchoolClass } from "@/lib/types";
+import type { SchoolClass, Teacher } from "@/lib/types";
 import { CLASS_TYPE_LABELS } from "@/lib/types";
+
+const ADD_NEW = "__add_new__";
 
 function todayIso() {
   const d = new Date();
@@ -15,20 +17,46 @@ function todayIso() {
 
 export function StartForm({
   classes,
+  teachers,
   kelompokName,
 }: {
   classes: SchoolClass[];
+  teachers: Teacher[];
   kelompokName: string;
 }) {
   const [state, formAction, pending] = useActionState(startSession, undefined);
+  const [selected, setSelected] = useState(teachers.length === 0 ? ADD_NEW : "");
+  const isAddingNew = selected === ADD_NEW;
 
   return (
     <form action={formAction} className="flex flex-col gap-5">
       <p className="text-sm text-zinc-500">Kelompok: {kelompokName}</p>
 
       <Field label="Your name">
-        <Input name="teacherName" placeholder="e.g. Ustadzah Fatimah" required />
+        <Select
+          value={isAddingNew ? ADD_NEW : selected}
+          onChange={(e) => setSelected(e.target.value)}
+          required={!isAddingNew}
+        >
+          <option value="" disabled>
+            Choose your name
+          </option>
+          {teachers.map((t) => (
+            <option key={t.id} value={t.full_name}>
+              {t.full_name}
+            </option>
+          ))}
+          <option value={ADD_NEW}>+ Add new teacher...</option>
+        </Select>
       </Field>
+
+      {isAddingNew ? (
+        <Field label="Your name">
+          <Input name="teacherName" placeholder="e.g. Ustadzah Fatimah" required autoFocus />
+        </Field>
+      ) : (
+        <input type="hidden" name="teacherName" value={selected} />
+      )}
 
       <Field label="Class">
         <Select name="classId" required defaultValue="">

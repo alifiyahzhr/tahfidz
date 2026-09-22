@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import { adminCreateSession } from "../actions";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/field";
-import type { SchoolClass, Term } from "@/lib/types";
+import type { SchoolClass } from "@/lib/types";
 
 function todayIso() {
   const d = new Date();

@@ -1,4 +1,6 @@
+import { CalendarRange } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { PageTitle } from "@/components/ui/page-title";
 import { getKelompokContext } from "../actions";
 import { CreateTermForm, SetActiveTermButton } from "./term-forms";
 
@@ -7,7 +9,7 @@ export default async function TermsPage() {
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-zinc-900">Terms</h1>
+      <PageTitle icon={CalendarRange}>Terms</PageTitle>
       <p className="mt-1 text-sm text-zinc-500">
         Only one term should be active at a time -- teachers record progress
         against whichever term is active.

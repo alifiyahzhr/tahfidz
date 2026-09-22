@@ -41,6 +41,19 @@ export interface Kelompok {
   slug: string;
 }
 
+export interface Teacher {
+  id: string;
+  kelompok_id: string;
+  full_name: string;
+}
+
+export interface StudentTarget {
+  id: string;
+  student_id: string;
+  term_id: string;
+  target_text: string;
+}
+
 export interface Term {
   id: string;
   daerah_id: string;
@@ -77,13 +90,6 @@ export interface Enrollment {
   student_id: string;
   term_id: string;
   class_id: string;
-}
-
-export interface ClassTarget {
-  id: string;
-  class_id: string;
-  term_id: string;
-  target_text: string;
 }
 
 export interface Session {

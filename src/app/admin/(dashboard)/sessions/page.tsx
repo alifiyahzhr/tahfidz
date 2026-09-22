@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { ClipboardList } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { PageTitle } from "@/components/ui/page-title";
 import { getKelompokContext, listSessions } from "../actions";
 import { TermPicker } from "../term-picker";
 import { NewSessionForm } from "./new-session-form";
@@ -17,7 +19,7 @@ export default async function SessionsPage({
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold text-zinc-900">Sessions</h1>
+        <PageTitle icon={ClipboardList}>Sessions</PageTitle>
         <TermPicker terms={terms} selectedTermId={activeTerm?.id} />
       </div>
 

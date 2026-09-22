@@ -1,17 +1,7 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { getCurrentAdmin } from "@/lib/admin-session";
 import { SignOutButton } from "./sign-out-button";
-
-const NAV_ITEMS = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/sessions", label: "Sessions" },
-  { href: "/admin/students", label: "Students" },
-  { href: "/admin/classes", label: "Classes & Targets" },
-  { href: "/admin/terms", label: "Terms" },
-  { href: "/admin/reports", label: "Reports" },
-  { href: "/admin/settings", label: "Settings" },
-];
+import { NavLinks } from "./nav-links";
 
 export default async function AdminLayout({
   children,
@@ -28,17 +18,7 @@ export default async function AdminLayout({
           <p className="text-sm font-semibold text-zinc-900">Tahfidz Admin</p>
           <p className="text-xs text-zinc-500">{admin.full_name}</p>
         </div>
-        <nav className="flex gap-1 overflow-x-auto md:flex-col md:overflow-visible">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <NavLinks />
         <div className="mt-6 px-2 md:mt-8">
           <SignOutButton />
         </div>

@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { LayoutDashboard } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { AppIcon } from "@/components/ui/app-icon";
+import { PageTitle } from "@/components/ui/page-title";
 import { getDashboardStats } from "./actions";
 
 export default async function AdminDashboardPage() {
@@ -9,7 +11,7 @@ export default async function AdminDashboardPage() {
   return (
     <div>
       <AppIcon size={48} className="mb-3" />
-      <h1 className="text-xl font-semibold text-zinc-900">Dashboard</h1>
+      <PageTitle icon={LayoutDashboard}>Dashboard</PageTitle>
       <p className="mt-1 text-sm text-zinc-500">
         {stats.term ? stats.term.name : "No active term set"}
       </p>
@@ -52,9 +54,9 @@ export default async function AdminDashboardPage() {
         </Link>
         <Link href="/admin/classes">
           <Card className="transition-colors hover:border-emerald-300">
-            <p className="font-medium text-zinc-900">Classes & Targets</p>
+            <p className="font-medium text-zinc-900">Classes</p>
             <p className="mt-1 text-sm text-zinc-500">
-              Set what each class is working toward this term.
+              Manage memorisation and recitation classes.
             </p>
           </Card>
         </Link>
@@ -62,7 +64,7 @@ export default async function AdminDashboardPage() {
           <Card className="transition-colors hover:border-emerald-300">
             <p className="font-medium text-zinc-900">Reports</p>
             <p className="mt-1 text-sm text-zinc-500">
-              Attendance and progress-vs-target charts.
+              Attendance and progress charts.
             </p>
           </Card>
         </Link>

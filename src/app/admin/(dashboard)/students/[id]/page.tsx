@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
-import { getStudentProfile, getKelompokContext } from "../../actions";
+import { getStudentProfile, getKelompokContext, getStudentTargets } from "../../actions";
 import { StudentDetailForm } from "./student-detail-form";
 import { EnrollmentForm } from "./enrollment-form";
+import { TargetForm } from "./target-form";
 import {
   ATTENDANCE_LABELS,
   PROFICIENCY_LABELS,
@@ -16,12 +17,14 @@ export default async function StudentProfilePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [{ student, enrollments, records }, { classes, terms }] = await Promise.all([
+  const [{ student, enrollments, records }, { classes, terms }, targets] = await Promise.all([
     getStudentProfile(id),
     getKelompokContext(),
+    getStudentTargets(id),
   ]);
 
   const currentByTerm = new Map(enrollments.map((e) => [e.term_id, e.class_id]));
+  const targetByTerm = new Map(targets.map((t) => [t.term_id, t.target_text]));
 
   return (
     <div>
@@ -43,6 +46,11 @@ export default async function StudentProfilePage({
           classes={classes}
           currentByTerm={currentByTerm}
         />
+      </Card>
+
+      <Card className="mt-4">
+        <h2 className="mb-4 text-sm font-semibold text-zinc-700">Target by Term</h2>
+        <TargetForm studentId={student.id} terms={terms} targetByTerm={targetByTerm} />
       </Card>
 
       <Card className="mt-4">

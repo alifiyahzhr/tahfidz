@@ -1,4 +1,6 @@
+import { BarChart3 } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { PageTitle } from "@/components/ui/page-title";
 import { getKelompokContext, getAttendanceReport, getProgressReport } from "../actions";
 import { TermPicker } from "../term-picker";
 import { AttendanceChart } from "@/components/charts/attendance-chart";
@@ -23,7 +25,7 @@ export default async function ReportsPage({
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold text-zinc-900">Reports</h1>
+        <PageTitle icon={BarChart3}>Reports</PageTitle>
         <TermPicker terms={terms} selectedTermId={activeTerm?.id} />
       </div>
 
@@ -37,18 +39,11 @@ export default async function ReportsPage({
           </Card>
 
           <Card className="mt-6">
-            <h2 className="text-sm font-semibold text-zinc-700">Progress vs Target</h2>
+            <h2 className="text-sm font-semibold text-zinc-700">Progress by Class</h2>
             <p className="mb-2 mt-1 text-xs text-zinc-500">
-              Proficiency ratings logged this term against each class&apos;s target.
+              Proficiency ratings logged this term. Individual targets are set
+              per student on their profile.
             </p>
-            <ul className="mb-2 flex flex-col gap-1 text-xs text-zinc-600">
-              {progress.map((p) => (
-                <li key={p.classId}>
-                  <span className="font-medium text-zinc-800">{p.className}:</span>{" "}
-                  {p.target ? p.target : <span className="text-zinc-400">No target set</span>}
-                </li>
-              ))}
-            </ul>
             <ProgressChart data={progress} />
           </Card>
         </>

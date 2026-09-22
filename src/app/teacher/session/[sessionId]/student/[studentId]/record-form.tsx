@@ -68,26 +68,22 @@ export function RecordForm({
         />
       </Field>
 
-      {attendance === "hadir" && (
-        <>
-          <Field label="What did they read?" hint="e.g. Surah Al-Baqarah 1-10, or Juz 29 recap">
-            <Input
-              name="progressText"
-              defaultValue={existing?.progress_text ?? ""}
-              placeholder="Surah / ayat / juz covered"
-            />
-          </Field>
+      <Field label="What did they read?" hint="e.g. Surah Al-Baqarah 1-10, or Juz 29 recap">
+        <Input
+          name="progressText"
+          defaultValue={existing?.progress_text ?? ""}
+          placeholder="Surah / ayat / juz covered"
+        />
+      </Field>
 
-          <Field label="Proficiency">
-            <SegmentedControl
-              name="proficiency"
-              options={PROFICIENCY_OPTIONS}
-              value={proficiency}
-              onChange={setProficiency}
-            />
-          </Field>
-        </>
-      )}
+      <Field label="Proficiency">
+        <SegmentedControl
+          name="proficiency"
+          options={PROFICIENCY_OPTIONS}
+          value={proficiency}
+          onChange={setProficiency}
+        />
+      </Field>
 
       <Field
         label="Comments"

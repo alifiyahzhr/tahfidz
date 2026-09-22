@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { Users } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { PageTitle } from "@/components/ui/page-title";
 import { listStudents, getKelompokContext } from "../actions";
 import { AddStudentForm } from "./add-student-form";
 
@@ -11,7 +13,7 @@ export default async function StudentsPage() {
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-zinc-900">Students</h1>
+      <PageTitle icon={Users}>Students</PageTitle>
 
       <Card className="mt-6">
         <h2 className="mb-4 text-sm font-semibold text-zinc-700">

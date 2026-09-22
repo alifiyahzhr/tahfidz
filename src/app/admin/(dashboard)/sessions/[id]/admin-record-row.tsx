@@ -64,27 +64,25 @@ export function AdminRecordRow({
         />
       </div>
 
-      {attendance === "hadir" && (
-        <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          <Field label="Progress">
-            <Input
-              name="progressText"
-              defaultValue={existing?.progress_text ?? ""}
-            />
-          </Field>
-          <div>
-            <span className="mb-1.5 block text-sm font-medium text-zinc-700">
-              Proficiency
-            </span>
-            <SegmentedControl
-              name="proficiency"
-              options={PROFICIENCY_OPTIONS}
-              value={proficiency}
-              onChange={setProficiency}
-            />
-          </div>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <Field label="Progress">
+          <Input
+            name="progressText"
+            defaultValue={existing?.progress_text ?? ""}
+          />
+        </Field>
+        <div>
+          <span className="mb-1.5 block text-sm font-medium text-zinc-700">
+            Proficiency
+          </span>
+          <SegmentedControl
+            name="proficiency"
+            options={PROFICIENCY_OPTIONS}
+            value={proficiency}
+            onChange={setProficiency}
+          />
         </div>
-      )}
+      </div>
 
       <div className="mt-3">
         <Field label="Comments">

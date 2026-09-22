@@ -1,13 +1,19 @@
+import { Settings as SettingsIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { getKelompokContext } from "../actions";
+import { PageTitle } from "@/components/ui/page-title";
+import { getKelompokContext, listTeachers } from "../actions";
 import { PinForm } from "./pin-form";
+import { TeachersCard } from "./teachers-card";
 
 export default async function SettingsPage() {
-  const { kelompok } = await getKelompokContext();
+  const [{ kelompok }, teachers] = await Promise.all([
+    getKelompokContext(),
+    listTeachers(),
+  ]);
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-zinc-900">Settings</h1>
+      <PageTitle icon={SettingsIcon}>Settings</PageTitle>
 
       <Card className="mt-6">
         <h2 className="mb-1 text-sm font-semibold text-zinc-700">
@@ -18,6 +24,8 @@ export default async function SettingsPage() {
         </p>
         <PinForm />
       </Card>
+
+      <TeachersCard teachers={teachers} />
     </div>
   );
 }

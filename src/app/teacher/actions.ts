@@ -15,6 +15,7 @@ import type {
   Session,
   SessionRecord,
   Student,
+  Teacher,
   Term,
 } from "@/lib/types";
 
@@ -85,6 +86,20 @@ export async function getClassesForCurrentKelompok() {
   return (data ?? []) as SchoolClass[];
 }
 
+export async function getTeachersForCurrentKelompok() {
+  const session = await getKelompokSession();
+  if (!session) return [];
+
+  const service = createServiceClient();
+  const { data } = await service
+    .from("teachers")
+    .select("*")
+    .eq("kelompok_id", session.kelompokId)
+    .order("full_name");
+
+  return (data ?? []) as Teacher[];
+}
+
 export async function startSession(_prevState: unknown, formData: FormData) {
   const session = await getKelompokSession();
   if (!session) redirect("/teacher");
@@ -106,6 +121,14 @@ export async function startSession(_prevState: unknown, formData: FormData) {
   }
 
   const service = createServiceClient();
+
+  // Remember a newly-typed teacher name for next time's dropdown.
+  await service
+    .from("teachers")
+    .upsert(
+      { kelompok_id: session.kelompokId, full_name: teacherName },
+      { onConflict: "kelompok_id,full_name", ignoreDuplicates: true },
+    );
 
   // Confirm the class actually belongs to this kelompok before writing anything.
   const { data: klass } = await service
@@ -241,8 +264,8 @@ export async function submitRecord(_prevState: unknown, formData: FormData) {
       session_id: sessionId,
       student_id: studentId,
       attendance,
-      progress_text: attendance === "hadir" ? progressText || null : null,
-      proficiency: attendance === "hadir" && proficiency ? proficiency : null,
+      progress_text: progressText || null,
+      proficiency: proficiency || null,
       comments: comments || null,
       updated_at: new Date().toISOString(),
     },
