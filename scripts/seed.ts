@@ -6,7 +6,8 @@
  * Edit the CONFIG block below, then run:
  *   npm run seed
  */
-import "dotenv/config";
+import { config } from "dotenv";
+config({ path: ".env.local" });
 import bcrypt from "bcryptjs";
 import { createClient } from "@supabase/supabase-js";
 
@@ -15,8 +16,8 @@ const CONFIG = {
   kelompokName: "Sydney",
   kelompokSlug: "sydney",
   teacherPin: "sydney2026", // teachers will use this to sign in -- change it!
-  adminEmail: "admin@example.com", // change to the real admin's email
-  adminPassword: "ChangeMe123!", // change before running, or update after in Supabase Auth
+  adminEmail: "zack.macock@gmail.com",
+  adminPassword: "DyMnTo4d0Zwp8PK5",
   adminFullName: "Admin",
   terms: [
     { year: 2026, term_number: 1, name: "Term 1 2026", start_date: "2026-02-02", end_date: "2026-04-02" },
