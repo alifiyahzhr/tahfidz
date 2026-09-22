@@ -19,12 +19,12 @@ export default async function ClassesPage({
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold text-zinc-900">Classes & targets</h1>
+        <h1 className="text-xl font-semibold text-zinc-900">Classes & Targets</h1>
         <TermPicker terms={terms} selectedTermId={activeTerm?.id} />
       </div>
 
       <Card className="mt-6">
-        <h2 className="mb-4 text-sm font-semibold text-zinc-700">Add a class</h2>
+        <h2 className="mb-4 text-sm font-semibold text-zinc-700">Add a Class</h2>
         <AddClassForm />
       </Card>
 

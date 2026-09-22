@@ -7,7 +7,7 @@ const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/sessions", label: "Sessions" },
   { href: "/admin/students", label: "Students" },
-  { href: "/admin/classes", label: "Classes & targets" },
+  { href: "/admin/classes", label: "Classes & Targets" },
   { href: "/admin/terms", label: "Terms" },
   { href: "/admin/reports", label: "Reports" },
   { href: "/admin/settings", label: "Settings" },

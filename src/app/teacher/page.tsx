@@ -6,7 +6,7 @@ export default function TeacherPinPage() {
     <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">
       <div className="w-full max-w-sm">
         <h1 className="text-center text-xl font-semibold text-zinc-900">
-          Teacher sign-in
+          Teacher Sign-In
         </h1>
         <p className="mt-1 text-center text-sm text-zinc-500">
           Enter your kelompok&apos;s PIN to continue.

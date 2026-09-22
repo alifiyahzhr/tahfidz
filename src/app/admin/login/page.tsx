@@ -6,7 +6,7 @@ export default function AdminLoginPage() {
     <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">
       <div className="w-full max-w-sm">
         <h1 className="text-center text-xl font-semibold text-zinc-900">
-          Admin sign-in
+          Admin Sign-In
         </h1>
         <div className="mt-8">
           <LoginForm />

@@ -15,7 +15,7 @@ export default async function StudentsPage() {
 
       <Card className="mt-6">
         <h2 className="mb-4 text-sm font-semibold text-zinc-700">
-          Add a student
+          Add a Student
         </h2>
         <AddStudentForm classes={classes} terms={terms} />
       </Card>

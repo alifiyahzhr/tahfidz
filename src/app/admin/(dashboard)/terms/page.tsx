@@ -14,7 +14,7 @@ export default async function TermsPage() {
       </p>
 
       <Card className="mt-6">
-        <h2 className="mb-4 text-sm font-semibold text-zinc-700">Add a term</h2>
+        <h2 className="mb-4 text-sm font-semibold text-zinc-700">Add a Term</h2>
         <CreateTermForm />
       </Card>
 

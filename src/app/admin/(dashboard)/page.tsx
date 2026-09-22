@@ -34,7 +34,7 @@ export default async function AdminDashboardPage() {
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         <Link href="/admin/sessions">
           <Card className="transition-colors hover:border-emerald-300">
-            <p className="font-medium text-zinc-900">Review sessions</p>
+            <p className="font-medium text-zinc-900">Review Sessions</p>
             <p className="mt-1 text-sm text-zinc-500">
               Correct attendance, progress, and comments teachers have logged.
             </p>
@@ -42,7 +42,7 @@ export default async function AdminDashboardPage() {
         </Link>
         <Link href="/admin/students">
           <Card className="transition-colors hover:border-emerald-300">
-            <p className="font-medium text-zinc-900">Manage students</p>
+            <p className="font-medium text-zinc-900">Manage Students</p>
             <p className="mt-1 text-sm text-zinc-500">
               Add students, update details, view individual profiles.
             </p>
@@ -50,7 +50,7 @@ export default async function AdminDashboardPage() {
         </Link>
         <Link href="/admin/classes">
           <Card className="transition-colors hover:border-emerald-300">
-            <p className="font-medium text-zinc-900">Classes & targets</p>
+            <p className="font-medium text-zinc-900">Classes & Targets</p>
             <p className="mt-1 text-sm text-zinc-500">
               Set what each class is working toward this term.
             </p>

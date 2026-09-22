@@ -32,12 +32,12 @@ export default async function ReportsPage({
       {activeTerm && (
         <>
           <Card className="mt-6">
-            <h2 className="text-sm font-semibold text-zinc-700">Attendance by class</h2>
+            <h2 className="text-sm font-semibold text-zinc-700">Attendance by Class</h2>
             <AttendanceChart data={attendance} />
           </Card>
 
           <Card className="mt-6">
-            <h2 className="text-sm font-semibold text-zinc-700">Progress vs target</h2>
+            <h2 className="text-sm font-semibold text-zinc-700">Progress vs Target</h2>
             <p className="mb-2 mt-1 text-xs text-zinc-500">
               Proficiency ratings logged this term against each class&apos;s target.
             </p>

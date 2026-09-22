@@ -36,7 +36,7 @@ export default async function StudentProfilePage({
       </Card>
 
       <Card className="mt-4">
-        <h2 className="mb-4 text-sm font-semibold text-zinc-700">Class by term</h2>
+        <h2 className="mb-4 text-sm font-semibold text-zinc-700">Class by Term</h2>
         <EnrollmentForm
           studentId={student.id}
           terms={terms}
@@ -46,7 +46,7 @@ export default async function StudentProfilePage({
       </Card>
 
       <Card className="mt-4">
-        <h2 className="mb-4 text-sm font-semibold text-zinc-700">Session history</h2>
+        <h2 className="mb-4 text-sm font-semibold text-zinc-700">Session History</h2>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-left text-sm">
             <thead>
