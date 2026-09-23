@@ -37,7 +37,7 @@ export default async function AdminDashboardPage() {
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         <Link href="/admin/sessions">
-          <Card className="transition-colors hover:border-emerald-300">
+          <Card className="transition-colors hover:border-emerald-300 hover:bg-zinc-50 active:bg-zinc-100">
             <p className="font-medium text-zinc-900">Review Sessions</p>
             <p className="mt-1 text-sm text-zinc-500">
               Correct attendance, progress, and comments teachers have logged.
@@ -45,7 +45,7 @@ export default async function AdminDashboardPage() {
           </Card>
         </Link>
         <Link href="/admin/students">
-          <Card className="transition-colors hover:border-emerald-300">
+          <Card className="transition-colors hover:border-emerald-300 hover:bg-zinc-50 active:bg-zinc-100">
             <p className="font-medium text-zinc-900">Manage Students</p>
             <p className="mt-1 text-sm text-zinc-500">
               Add students, update details, view individual profiles.
@@ -53,7 +53,7 @@ export default async function AdminDashboardPage() {
           </Card>
         </Link>
         <Link href="/admin/classes">
-          <Card className="transition-colors hover:border-emerald-300">
+          <Card className="transition-colors hover:border-emerald-300 hover:bg-zinc-50 active:bg-zinc-100">
             <p className="font-medium text-zinc-900">Classes</p>
             <p className="mt-1 text-sm text-zinc-500">
               Manage memorisation and recitation classes.
@@ -61,7 +61,7 @@ export default async function AdminDashboardPage() {
           </Card>
         </Link>
         <Link href="/admin/reports">
-          <Card className="transition-colors hover:border-emerald-300">
+          <Card className="transition-colors hover:border-emerald-300 hover:bg-zinc-50 active:bg-zinc-100">
             <p className="font-medium text-zinc-900">Reports</p>
             <p className="mt-1 text-sm text-zinc-500">
               Attendance and progress charts.

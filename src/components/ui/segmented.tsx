@@ -27,10 +27,10 @@ export function SegmentedControl<T extends string>({
             aria-checked={active}
             onClick={() => onChange(opt.value)}
             className={clsx(
-              "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
+              "min-h-11 rounded-full border px-5 py-3 text-sm font-medium transition-colors duration-150 active:scale-[0.97]",
               active
                 ? (colorFor?.(opt.value) ?? "bg-emerald-700 text-white border-emerald-700")
-                : "bg-white text-zinc-700 border-zinc-300 hover:bg-zinc-50",
+                : "bg-white text-zinc-700 border-zinc-300 hover:bg-zinc-50 hover:border-zinc-400 active:bg-zinc-100",
             )}
           >
             {opt.label}

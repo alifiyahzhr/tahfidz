@@ -14,7 +14,7 @@ export function SignOutButton() {
         router.push("/admin/login");
         router.refresh();
       }}
-      className="text-sm text-zinc-500 hover:text-zinc-900"
+      className="rounded-md px-2 py-1.5 text-sm text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 active:bg-zinc-200"
     >
       Sign out
     </button>

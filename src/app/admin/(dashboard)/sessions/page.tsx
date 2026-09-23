@@ -39,7 +39,7 @@ export default async function SessionsPage({
           <Link
             key={s.id}
             href={`/admin/sessions/${s.id}`}
-            className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white px-4 py-3 hover:bg-zinc-50"
+            className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white px-4 py-3 transition-colors hover:bg-zinc-50 active:bg-zinc-100"
           >
             <div>
               <p className="font-medium text-zinc-900">{s.classes.name}</p>

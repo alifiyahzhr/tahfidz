@@ -208,7 +208,18 @@ export async function getSessionWithRoster(sessionId: string) {
   return { session, students, records: (records ?? []) as SessionRecord[] };
 }
 
-export async function getStudentAndRecord(sessionId: string, studentId: string) {
+export interface SessionRecordInput {
+  studentId: string;
+  attendance: AttendanceStatus | null;
+  progress_text: string;
+  proficiency: ProficiencyRating | null;
+  comments: string;
+}
+
+export async function submitSessionRecords(
+  sessionId: string,
+  records: SessionRecordInput[],
+) {
   const kelompokSession = await getKelompokSession();
   if (!kelompokSession) redirect("/teacher");
 
@@ -221,58 +232,28 @@ export async function getStudentAndRecord(sessionId: string, studentId: string) 
     .single();
   const session = sessionData as unknown as (Session & { classes: SchoolClass }) | null;
   if (!session || session.classes.kelompok_id !== kelompokSession.kelompokId) {
-    redirect("/teacher/start");
+    return { error: "Not found." };
   }
 
-  const { data: student } = await service
-    .from("students")
-    .select("*")
-    .eq("id", studentId)
-    .single();
-  if (!student) redirect(`/teacher/session/${sessionId}`);
+  if (records.some((r) => !r.attendance)) {
+    return { error: "Mark attendance for every child before saving." };
+  }
 
-  const { data: record } = await service
+  const rows = records.map((r) => ({
+    session_id: sessionId,
+    student_id: r.studentId,
+    attendance: r.attendance,
+    progress_text: r.progress_text.trim() || null,
+    proficiency: r.proficiency || null,
+    comments: r.comments.trim() || null,
+    updated_at: new Date().toISOString(),
+  }));
+
+  const { error } = await service
     .from("session_records")
-    .select("*")
-    .eq("session_id", sessionId)
-    .eq("student_id", studentId)
-    .maybeSingle();
+    .upsert(rows, { onConflict: "session_id,student_id" });
 
-  return { session, student: student as Student, record: record as SessionRecord | null };
-}
+  if (error) return { error: "Couldn't save. Please try again." };
 
-export async function submitRecord(_prevState: unknown, formData: FormData) {
-  const kelompokSession = await getKelompokSession();
-  if (!kelompokSession) redirect("/teacher");
-
-  const sessionId = String(formData.get("sessionId") ?? "");
-  const studentId = String(formData.get("studentId") ?? "");
-  const attendance = String(formData.get("attendance") ?? "") as AttendanceStatus;
-  const progressText = String(formData.get("progressText") ?? "").trim();
-  const proficiency = String(formData.get("proficiency") ?? "") as
-    | ProficiencyRating
-    | "";
-  const comments = String(formData.get("comments") ?? "").trim();
-
-  if (!sessionId || !studentId) return { error: "Missing session or student." };
-  if (!attendance) return { error: "Choose an attendance status." };
-
-  const service = createServiceClient();
-
-  const { error } = await service.from("session_records").upsert(
-    {
-      session_id: sessionId,
-      student_id: studentId,
-      attendance,
-      progress_text: progressText || null,
-      proficiency: proficiency || null,
-      comments: comments || null,
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: "session_id,student_id" },
-  );
-
-  if (error) return { error: "Couldn't save that record. Try again." };
-
-  redirect(`/teacher/session/${sessionId}`);
+  return { success: true };
 }

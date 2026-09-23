@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getCurrentAdmin } from "@/lib/admin-session";
 import { createServiceClient } from "@/lib/supabase/service";
+import { calculateAge } from "@/lib/format";
 import type {
   AttendanceStatus,
   Kelompok,
@@ -173,15 +174,37 @@ export async function getDashboardStats() {
 
 // ---------- Students ----------
 
-export async function listStudents() {
+export async function listStudents(termId?: string) {
   const kelompokId = await scopedKelompokId();
   const service = createServiceClient();
-  const { data } = await service
+  const { data: students } = await service
     .from("students")
     .select("*")
     .eq("kelompok_id", kelompokId)
     .order("full_name");
-  return (data ?? []) as Student[];
+
+  const classByStudent = new Map<string, string>();
+  if (termId && students?.length) {
+    const { data: enrollments } = await service
+      .from("enrollments")
+      .select("student_id, classes(name)")
+      .eq("term_id", termId)
+      .in(
+        "student_id",
+        students.map((s) => s.id),
+      );
+    for (const e of (enrollments ?? []) as unknown as Array<{
+      student_id: string;
+      classes: { name: string } | null;
+    }>) {
+      if (e.classes) classByStudent.set(e.student_id, e.classes.name);
+    }
+  }
+
+  return (students ?? []).map((s) => ({
+    ...(s as Student),
+    className: classByStudent.get(s.id) ?? null,
+  }));
 }
 
 export async function getStudentProfile(studentId: string) {
@@ -365,6 +388,131 @@ export async function createClass(_prevState: unknown, formData: FormData) {
 
   revalidatePath("/admin/classes");
   return { success: true };
+}
+
+export async function getClassesOverview(termId?: string) {
+  const kelompokId = await scopedKelompokId();
+  const service = createServiceClient();
+
+  const { data: classes } = await service
+    .from("classes")
+    .select("*")
+    .eq("kelompok_id", kelompokId)
+    .order("sort_order");
+
+  if (!termId || !classes?.length) {
+    return (classes ?? []).map((c) => ({
+      ...(c as SchoolClass),
+      studentCount: 0,
+      minAge: null as number | null,
+      maxAge: null as number | null,
+    }));
+  }
+
+  const { data: enrollments } = await service
+    .from("enrollments")
+    .select("class_id, students(date_of_birth)")
+    .eq("term_id", termId)
+    .in(
+      "class_id",
+      classes.map((c) => c.id),
+    );
+
+  const byClass = new Map<string, { count: number; ages: number[] }>();
+  for (const e of (enrollments ?? []) as unknown as Array<{
+    class_id: string;
+    students: { date_of_birth: string | null } | null;
+  }>) {
+    const entry = byClass.get(e.class_id) ?? { count: 0, ages: [] };
+    entry.count += 1;
+    const age = calculateAge(e.students?.date_of_birth ?? null);
+    if (age !== null) entry.ages.push(age);
+    byClass.set(e.class_id, entry);
+  }
+
+  return classes.map((c) => {
+    const entry = byClass.get(c.id);
+    const ages = entry?.ages ?? [];
+    return {
+      ...(c as SchoolClass),
+      studentCount: entry?.count ?? 0,
+      minAge: ages.length ? Math.min(...ages) : null,
+      maxAge: ages.length ? Math.max(...ages) : null,
+    };
+  });
+}
+
+const PROFICIENCY_NUMERIC: Record<string, number> = {
+  ulang: 1,
+  cukup: 2,
+  baik: 3,
+  lancar: 4,
+};
+
+export async function getClassDetail(classId: string, termId?: string) {
+  const kelompokId = await scopedKelompokId();
+  const service = createServiceClient();
+
+  const { data: klass } = await service
+    .from("classes")
+    .select("*")
+    .eq("id", classId)
+    .eq("kelompok_id", kelompokId)
+    .single();
+  if (!klass) redirect("/admin/classes");
+
+  let students: Student[] = [];
+  if (termId) {
+    const { data: enrollments } = await service
+      .from("enrollments")
+      .select("students(*)")
+      .eq("class_id", classId)
+      .eq("term_id", termId);
+    students = ((enrollments ?? []) as unknown as Array<{ students: Student | null }>)
+      .map((e) => e.students)
+      .filter((s): s is Student => !!s)
+      .sort((a, b) => a.full_name.localeCompare(b.full_name));
+  }
+
+  let sessionsQuery = service
+    .from("sessions")
+    .select("id, teacher_name, session_date")
+    .eq("class_id", classId);
+  if (termId) sessionsQuery = sessionsQuery.eq("term_id", termId);
+  const { data: sessions } = await sessionsQuery;
+
+  const teachers = Array.from(
+    new Set((sessions ?? []).map((s) => s.teacher_name)),
+  ).sort();
+
+  const dateBySession = new Map((sessions ?? []).map((s) => [s.id, s.session_date]));
+  const sessionIds = (sessions ?? []).map((s) => s.id);
+
+  let scatterData: { date: string; proficiency: number; studentName: string }[] = [];
+  if (sessionIds.length) {
+    const { data: records } = await service
+      .from("session_records")
+      .select("session_id, proficiency, students(full_name)")
+      .in("session_id", sessionIds)
+      .not("proficiency", "is", null);
+
+    scatterData = (
+      (records ?? []) as unknown as Array<{
+        session_id: string;
+        proficiency: string;
+        students: { full_name: string } | null;
+      }>
+    )
+      .map((r) => ({
+        date: dateBySession.get(r.session_id) ?? "",
+        proficiency: PROFICIENCY_NUMERIC[r.proficiency] ?? 0,
+        studentName: r.students?.full_name ?? "Unknown",
+      }))
+      .filter((d) => d.date && d.proficiency > 0)
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }
+
+  return { class: klass as SchoolClass, students, teachers, scatterData };
 }
 
 // ---------- Student targets ----------

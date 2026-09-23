@@ -28,7 +28,7 @@ export default async function StartPage() {
           <form action={signOutTeacher}>
             <button
               type="submit"
-              className="text-sm text-zinc-500 hover:text-zinc-700"
+              className="rounded-md px-2 py-1.5 text-sm text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700 active:bg-zinc-200"
             >
               Log out
             </button>
